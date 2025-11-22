@@ -1,135 +1,76 @@
-<!DOCTYPE html> <!-- Using bootstrap starter template -->
-<html lang="en">
-    <head>
-        <title>portfolioProject - aboutPage</title>
-        <!-- Required meta tags -->
-        <meta charset="utf-8" />
-        <meta
-            name="viewport"
-            content="width=device-width, initial-scale=1, shrink-to-fit=no"
-        />
+<main>
+    <!-- About page content -->
+    <div class="aboutContainer">
+        <div class="aboutHeader">
+            <h1>About <span>Me</span></h1>
+            <p>More about who I am and what I do</p>
+        </div>
         
-        <!-- Fonts from google (Poppins)-->
-        <link rel="preconnect" href="https://fonts.googleapis.com">
-        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-        <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
-
-        <!-- CDN from cdnjs -->
-        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css" 
-        integrity="sha512-Evv84Mr4kqVGRNSgIGL/F/aIDqQb7xQ2vcrdIwxfjThSH8CSR7PBEakCr51Ck+w+/U6swU2Im1vVX0SVk9ABhg==" crossorigin="anonymous" 
-        referrerpolicy="no-referrer" />
-
-        <!-- Bootstrap CSS v5.2.1 -->
-        <link
-            href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css"
-            rel="stylesheet"
-            integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN"
-            crossorigin="anonymous"
-        />
-        <link rel="stylesheet" href="projectStyle.css">
-    </head>
-
-    <body class="aboutPage">
-        <!--Navbar-->
-        <div id="headerLoad"></div>
-
-        <main>
-            <!-- About page content -->
-            <div class="aboutContainer">
-                <div class="aboutHeader">
-                    <h1>About <span>Me</span></h1>
-                    <p>More about who I am and what I do</p>
+        <section class="profileSection">
+            <div class="profileImage">
+                <img src="images/pfp2.webp" alt="John Laurence Mislang profile">
+            </div>
+            
+            <div class="profileText">
+                <h2>Hello, I'm John Laurence Mislang</h2>
+                <p>A York University student studying Information Technology with a focus on Cybersecurity. I've always been fascinated by computers and technology since I was young.</p>
+                <p>I grew up in a rural area in the Philippines and my journey into IT really only started when I arrived here in Canada back in 2018. I have only watched videos about different technologies before coming here and my interest only grew stronger after having access to unlimited internet and building my very own first computer back in 2022.</p>
+                <p>I try to dabble in a little bit of everything that interests me; mainly video games, animations/3D modelling, and recently cybersecurity as well. Some projects that I have done can be seen in my Projects page.</p>
+            </div>
+        </section>
+        
+        <!-- Skills Section -->
+        <section class="skillsSection">
+            <h2>My Skills</h2>
+            <div class="skillsContainer">
+                <div class="skillItem">
+                    <div class="skillIcon">
+                        <i class="fa-solid fa-cubes"></i>
+                    </div>
+                    <h3>3D Modelling</h3>
+                    <p>Maya and Mudbox</p>
                 </div>
                 
-                <section class="profileSection">
-                    <div class="profileImage">
-                        <img src="images/pfp2.webp" alt="John Laurence Mislang profile">
+                <div class="skillItem">
+                    <div class="skillIcon">
+                        <i class="fa-solid fa-lock"></i>
                     </div>
-                    
-                    <div class="profileText">
-                        <h2>Hello, I'm John Laurence Mislang</h2>
-                        <p>A York University student studying Information Technology with a focus on Cybersecurity. I've always been fascinated by computers and technology since I was young.</p>
-                        <p>I grew up in a rural area in the Philippines and my journey into IT really only started when I arrived here in Canada back in 2018. I have only watched videos about different technologies before coming here and my interest only grew stronger after having access to unlimited internet and building my very own first computer back in 2022.</p>
-                        <p>I try to dabble in a little bit of everything that interests me; mainly video games, animations/3D modelling, and recently cybersecurity as well. Some projects that I have done can be seen in my Projects page.</p>
-                    </div>
-                </section>
+                    <h3>Cybersecurity</h3>
+                    <p>Encryption, CIA triad, Linux, NIST</p>
+                </div>
                 
-                <!-- Skills Section -->
-                <section class="skillsSection">
-                    <h2>My Skills</h2>
-                    <div class="skillsContainer">
-                        <div class="skillItem">
-                            <div class="skillIcon">
-                                <i class="fa-solid fa-cubes"></i>
-                            </div>
-                            <h3>3D Modelling</h3>
-                            <p>Maya and Mudbox</p>
-                        </div>
-                        
-                        <div class="skillItem">
-                            <div class="skillIcon">
-                                <i class="fa-solid fa-lock"></i>
-                            </div>
-                            <h3>Cybersecurity</h3>
-                            <p>Encryption, CIA triad, Linux, NIST</p>
-                        </div>
-                        
-                        <div class="skillItem">
-                            <div class="skillIcon">
-                                <i class="fa-solid fa-gamepad"></i>
-                            </div>
-                            <h3>Game Development</h3>
-                            <p>Unity</p>
-                        </div>
-                        
-                        <div class="skillItem">
-                            <div class="skillIcon">
-                                <i class="fa-solid fa-code"></i>
-                            </div>
-                            <h3>Programming</h3>
-                            <p>Python, Java, SQL, HTML/CSS, JavaScript</p>
-                        </div>
+                <div class="skillItem">
+                    <div class="skillIcon">
+                        <i class="fa-solid fa-gamepad"></i>
                     </div>
-                </section>
+                    <h3>Game Development</h3>
+                    <p>Unity</p>
+                </div>
                 
-                <!-- Education Section -->
-                <section class="educationSection">
-                    <h2>Education</h2>                   
-                    <div class="educationItem">
-                        <h3>James Cardinal McGuigan High School</h3>
-                        <p>Firt Class Honour Roll</p>
-                        <p>2018 - 2022</p>
+                <div class="skillItem">
+                    <div class="skillIcon">
+                        <i class="fa-solid fa-code"></i>
                     </div>
-
-                    <div class="educationItem">
-                        <h3>York University</h3>
-                        <p>Bachelor of Arts: Information Technology Honours (Dean's List)</p>
-                        <p>2022 - Present</p>
-                    </div>
-                </section>
+                    <h3>Programming</h3>
+                    <p>Python, Java, SQL, HTML/CSS, JavaScript</p>
+                </div>
             </div>
-        </main>
+        </section>
+        
+        <!-- Education Section -->
+        <section class="educationSection">
+            <h2>Education</h2>                   
+            <div class="educationItem">
+                <h3>James Cardinal McGuigan High School</h3>
+                <p>Firt Class Honour Roll</p>
+                <p>2018 - 2022</p>
+            </div>
 
-        <!-- Footer -->
-        <div id="footerLoad"></div>
-
-
-        <!-- Bootstrap JavaScript Libraries -->
-        <script
-            src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js"
-            integrity="sha384-I7E8VVD/ismYTF4hNIPjVp/Zjvgyol6VFvRkX/vR+Vc4jQkC+hVqc2pM8ODewa9r"
-            crossorigin="anonymous"
-        ></script>
-
-        <script
-            src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.min.js"
-            integrity="sha384-BBtl+eGJRgqQAUMxJ7pMwbEyER4l1g+O15P+16Ep7Q9Q+zqX6gSbd85u4mG4QzX+"
-            crossorigin="anonymous"
-        ></script>
-
-        <!-- Actual Scripts for the Project -->
-         <script src="js/themeToggle.js"></script>
-         <script src="js/scripts.js"></script>
-         <script src="js/headerFooterLoader.js"></script>
-    </body>
-</html>
+            <div class="educationItem">
+                <h3>York University</h3>
+                <p>Bachelor of Arts: Information Technology Honours (Dean's List)</p>
+                <p>2022 - Present</p>
+            </div>
+        </section>
+    </div>
+</main>
