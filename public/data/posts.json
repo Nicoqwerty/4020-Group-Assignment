@@ -1,0 +1,17 @@
+[
+    {
+        "title": "Implementing Theme Toggle",
+        "date": "2025-08-02",
+        "content": "I implemented a theme toggle using JavaScript and CSS using these approach:<br><br>1. <strong>CSS Theme Variables</strong>: Created light and dark theme variables in the <code>:root</code> selector using CSS for colors, backgrounds, borders, etc.<br>2. <strong>Theme Toggle Mechanism</strong>: The JavaScript toggle handler adds/removes the 'light-theme' class to the <code>&lt;body&gt;</code> element to switch themes.<br>3. <strong>Class-Based Styling</strong>: Used <code>body.light-theme</code> selectors to override dark theme variables with light theme values.<br>4. <strong>Theme Load</strong>: Saved user preference using <code>localStorage.setItem('currentTheme', theme)</code> and retrieved it on page load.<br>5. <strong>System Preference Detection</strong>: Used <code>window.matchMedia('(prefers-color-scheme: light)')</code> to detect system preference.<br>6. <strong>Visual Feedback</strong>: Dynamically changed the button icon between moon (dark) and sun (light) using <code>classList.replace()</code>."
+    },
+    {
+        "title": "Dynamic Blog Implementation",
+        "date": "2025-08-02",
+        "content": "I implemented a dynamic blog section that loads content from a JSON file using JavaScript:<br><br>1. <strong>JSON Structure</strong>: Created a posts.json file with an array of blog post objects containing title, date, and content.<br>2. <strong>Fetch API</strong>: Used <code>fetch('data/posts.json')</code> to retrieve blog contents from the <code>posts.json</code> file.<br>3. <strong>DOM Manipulation</strong>: For each post:<ul><li>Created a <code>&lt;div&gt;</code> container and other elementswith <code>document.createElement()</code>.</li><li>Applied styling through CSS classes on the 'Blog Page Styles' section (i.e. <code>blog-post</code>).</li></ul>4. <strong>Date Handling</strong>: Converted dates to locale format using <code>new Date().toLocaleDateString()</code>.<br>5. <strong>Error Handling</strong>: Implemented basic error catching with <code>.catch()</code>."
+    },
+    {
+        "title": "Current Goals",
+        "date": "2025-08-03",
+        "content": "Now that I am graduating from University soon, I have started thinking about my next steps into the professional world. I am particularly interested in the Cybersecurity field, and I am currently working on getting my certifications as well as learning some tools that are widely used in the industry, particularly SIEM tools. I have gotten my Google Cybersecurity Certification and am currently studying for the CompTIA Security+ Certification, which I will be taking soon. I am also planning on joining the winter Co-op program to test my luck and hopefully get a little bit more experience, just to make job hunting a bit easier after graduation.<br><br>I know it's a little late to be thinking about these things on my last year of University, but better late than never I guess. I do hope that it will all, or atleast some of it, work out somehow and for my preparations to bear fruit."
+    }
+]
