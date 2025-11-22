@@ -13,7 +13,7 @@ function loadPage() {
 
     if (!page) {
         document.getElementById('app').innerHTML =
-            "<h2 style='text-align:center;padding:2rem'>404 - Page Not Found</h2>";
+            "<h2 style='text-align:center; padding:2rem;'>404 - Page Not Found</h2>";
         return;
     }
 
@@ -21,7 +21,23 @@ function loadPage() {
         .then(res => res.text())
         .then(html => {
             document.getElementById('app').innerHTML = html;
+
+            // Update nav highlight
             setActiveLink();
+
+            // Blog page special logic
+            if (hash === '/blog') {
+                if (typeof loadBlogPosts === 'function') {
+                    loadBlogPosts();
+                } else {
+                    console.error("loadBlogPosts() not found.");
+                }
+            }
+        })
+        .catch(err => {
+            console.error(`Failed to load ${page}:`, err);
+            document.getElementById('app').innerHTML =
+                "<h2 style='text-align:center; padding:2rem;'>Error loading page</h2>";
         });
 }
 
