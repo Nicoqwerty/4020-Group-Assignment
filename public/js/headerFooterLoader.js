@@ -18,12 +18,12 @@ function loadComponent(url, elementId) {
 }
 
 function setActiveLink() {
-    const currentPage = location.pathname.split('/').pop();
+    const currentPage = location.hash || '#/';
     const navLinks = document.querySelectorAll('nav a');
     
     navLinks.forEach(link => {
         const linkPage = link.getAttribute('href');
-        if (linkPage === currentPage) {
+        if (link.getAttribute('href') === currentPage) {
             link.classList.add('active');
         } else {
             link.classList.remove('active');
