@@ -1,5 +1,1 @@
-# 4020-Group-Assignment
-
-we get 100 on this light work 
-
-FRFR
+This is the source code to Jon Barron's public academic website: https://jonbarron.info/. Feel free to clone this code for your own personal use.
