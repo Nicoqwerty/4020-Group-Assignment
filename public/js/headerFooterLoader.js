@@ -12,6 +12,7 @@ function loadComponent(url, elementId) {
             if (elementId === 'headerLoad') {
                 initThemeToggle(); // Initialize theme toggle
                 setActiveLink();   // Set active navigation link
+                initAssistant();   // Initialize Assistant
             }
         })
         .catch(error => console.error(`Error loading ${url}:`, error));
@@ -35,3 +36,51 @@ document.addEventListener('DOMContentLoaded', () => {
     loadComponent('header.html', 'headerLoad');
     loadComponent('footer.html', 'footerLoad');
 });
+
+/* ----------------------------------------- Dynamic Assistant ---------------------------------- */
+
+function initAssistant() {
+    let bubbleVisible = true;
+
+    const assistantBubble = document.getElementById("assistant-bubble");
+    const assistantIcon = document.getElementById("assistant-icon");
+
+    assistantIcon.addEventListener("click", () => {
+        bubbleVisible = !bubbleVisible;
+        assistantBubble.style.display = bubbleVisible ? "block" : "none";
+    });
+
+
+
+    if (!assistantBubble || !assistantIcon) {
+        console.error("Assistant elements not found.");
+        return;
+    }
+
+    const messages = [
+        "Evaluating ChatGPT across multiple domains.",
+        "Datasets: History, Social Science, Cybersecurity.",
+        "Backend uses Node.js, MongoDB, and WebSockets.",
+        "Charts will display accuracy and response time.",
+        "Hash routing keeps this site smooth and fast!"
+    ];
+
+    let index = 0;
+
+    function showMessage() {
+        if (!bubbleVisible) return;
+
+        assistantBubble.classList.add("fade-out");
+
+        setTimeout(() => {
+            assistantBubble.textContent = messages[index];
+            assistantBubble.classList.remove("fade-out");
+            assistantBubble.style.display = "block";
+            index = (index + 1) % messages.length;
+        }, 500);
+    }
+
+    showMessage();
+
+    setInterval(showMessage, 6000);
+}

@@ -4,7 +4,8 @@ const routes = {
     '/projects': 'projects.html',
     '/blog': 'blog.html',
     '/resume': 'resume.html',
-    '/contact': 'contact.html'
+    '/contact': 'contact.html',
+    '/evaluation': 'evaluation.html'
 };
 
 function loadPage() {
