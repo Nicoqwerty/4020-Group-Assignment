@@ -1,3 +1,4 @@
+require('dotenv').config();
 const express = require('express');
 const path = require('path');
 const { MongoClient } = require('mongodb');
@@ -6,6 +7,10 @@ const PORT = process.env.PORT || 3000;
 
 app.use(express.json());
 app.use(express.static(path.join(__dirname, 'public')));
+
+ const openai = new OpenAI({
+  apiKey: process.env.OPENAI_API_KEY
+});
 
 // -----------------------------------
 // MONGODB (OFFICIAL DRIVER ONLY)
@@ -23,7 +28,6 @@ async function connectDB() {
     console.error("MongoDB Connection Error:", err);
   }
 }
-
 
 connectDB();
 
