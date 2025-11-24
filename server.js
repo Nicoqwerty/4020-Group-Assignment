@@ -1,20 +1,53 @@
 require('dotenv').config();
+console.log("OpenAI key loaded:", process.env.OPENAI_API_KEY ? "YES" : "NO");
 const express = require('express');
 const path = require('path');
 const { MongoClient } = require('mongodb');
 const app = express();
 const PORT = process.env.PORT || 3000;
+const OpenAI = require("openai");
 
 app.use(express.json());
 app.use(express.static(path.join(__dirname, 'public')));
 
+//Result = 5 code
+app.get('/api/add', (req, res) => {
+  const a = Number(req.query.a);
+  const b = Number(req.query.b);
+
+
+  if (isNaN(a) || isNaN(b)) {
+    return res.status(400).json({ error: 'Both a and b must be numbers' });
+  }
+
+  const result = a + b;
+  res.json({ result });
+});
+
+app.get("/api/test-gpt", async (req, res) => {
+  try {
+    const gptResponse = await openai.chat.completions.create({
+      model: "gpt-4o-mini",
+      messages: [{ role: "user", content: "Hello, test connection!" }]
+    });
+
+    res.json({
+      success: true,
+      answer: gptResponse.choices[0].message.content
+    });
+  } catch (err) {
+    console.error("OpenAI test error:", err);
+    res.status(500).json({ error: "OpenAI test failed", details: err.message });
+  }
+});
+
+
+
+//GPT stuff
  const openai = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY
 });
 
-// -----------------------------------
-// MONGODB (OFFICIAL DRIVER ONLY)
-// -----------------------------------
 const uri = "mongodb+srv://nicog_db_user:PhjNsIHOuMU7Hq7a@4020ass.zqyqk7l.mongodb.net/?appName=4020Ass";
 const client = new MongoClient(uri);
 let db;
@@ -23,17 +56,13 @@ async function connectDB() {
   try {
     await client.connect();
     console.log("Connected to MongoDB Atlas");
-    db = client.db("test"); // choose your database, e.g., test
+    db = client.db("test");
   } catch (err) {
     console.error("MongoDB Connection Error:", err);
   }
 }
-
 connectDB();
 
-// -----------------------------------
-// INSERT DATA ROUTE
-// -----------------------------------
 app.post('/api/message', async (req, res) => {
   const text = req.body.text;
 
@@ -47,9 +76,6 @@ app.post('/api/message', async (req, res) => {
   res.json({ success: true, message: "Saved to database." });
 });
 
-// -----------------------------------
-// READ DATA ROUTE
-// -----------------------------------
 app.get('/api/messages', async (req, res) => {
   const messages = db.collection("messages");
   const data = await messages.find().toArray();
@@ -57,22 +83,65 @@ app.get('/api/messages', async (req, res) => {
   res.json(data);
 });
 
-// -----------------------------------
-// FETCH CSV COLLECTION
-// -----------------------------------
-app.get('/api/result', async (req, res) => {
+app.get("/api/run-gpt-50", async (req, res) => {
   try {
-    const sociologyCollection = db.collection("sociology_test"); // your CSV collection
-    const data = await sociologyCollection.find().limit(50).toArray(); // fetch first 50 rows
-    res.json(data);
+    const questionDocs = await db.collection("sociology_cleaned")
+                                 .find({})
+                                 .limit(50)
+                                 .toArray();
+
+    const results = [];
+
+    for (const doc of questionDocs) {
+      const questionText = doc.question ?? doc[Object.keys(doc).find(k => k !== "_id")];
+      if (!questionText) {
+        console.log("Skipping doc with no question:", doc);
+        continue;
+      }
+
+      console.log("Processing question:", questionText);
+
+      const start = Date.now();
+
+      const gptResponse = await openai.chat.completions.create({
+        model: "gpt-4o-mini",
+        messages: [
+          { role: "user", content: questionText }
+        ]
+      });
+
+      console.log("Raw GPT response:", gptResponse);
+
+      const timeTaken = Date.now() - start;
+      const answerText = gptResponse.choices?.[0]?.message?.content ?? "No response";
+
+      await db.collection("gpt_answers").insertOne({
+        question: questionText,
+        gpt_answer: answerText,
+        response_time_ms: timeTaken,
+        createdAt: new Date()
+      });
+
+      results.push({
+        question: questionText,
+        gpt_answer: answerText,
+        response_time_ms: timeTaken
+      });
+    }
+
+    res.json({ success: true, count: results.length, results });
+
   } catch (err) {
-    console.error("Error fetching sociology_test:", err);
-    res.status(500).json({ error: "Failed to fetch data" });
+    console.error("GPT processing error:", err);
+    res.status(500).json({ 
+      error: "GPT processing failed", 
+      details: err.message,
+      stack: err.stack
+    });
   }
 });
 
 
-// -----------------------------------
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
 });
