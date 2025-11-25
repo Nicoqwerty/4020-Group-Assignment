@@ -23,7 +23,6 @@ function loadPage() {
         .then(html => {
             document.getElementById('app').innerHTML = html;
 
-            // Update nav highlight
             setActiveLink();
 
             // Blog page special logic
@@ -34,6 +33,22 @@ function loadPage() {
                     console.error("loadBlogPosts() not found.");
                 }
             }
+
+            // WebSocket page logic
+            if (hash === '/evaluation') {
+
+                // Load websocket.js dynamically
+                const script = document.createElement("script");
+                script.src = "js/websocket.js";
+                script.onload = () => {
+                    console.log("websocket.js loaded");
+                    if (typeof initWebSocket === "function") initWebSocket();
+                    else console.error("initWebSocket still missing");
+                };
+
+                document.body.appendChild(script);
+            }
+
         })
         .catch(err => {
             console.error(`Failed to load ${page}:`, err);
