@@ -141,7 +141,39 @@ app.get("/api/run-gpt-50", async (req, res) => {
   }
 });
 
-
 app.listen(PORT, () => {
-  console.log(`Server running on port ${PORT}`);
+  console.log(`Server running at http://localhost:${PORT}`);
+});
+
+// ----------------------------- WebSocket Server -----------------------------
+
+const WebSocket = require("ws");
+const wss = new WebSocket.Server({ port: 3001 });
+
+console.log("WebSocket server running on ws://localhost:3001");
+
+function broadcast(msg) {
+    wss.clients.forEach(client => {
+        if (client.readyState === WebSocket.OPEN) {
+            client.send(msg);
+        }
+    });
+}
+
+wss.on("connection", (socket) => {
+    console.log("Client connected to WebSocket");
+
+    socket.send("Connected to WebSocket Server!");
+
+    socket.on("message", (msg) => {
+        console.log("Client says:", msg.toString());
+
+        // Echo back only to sender
+        socket.send("Server Received: " + msg);
+
+        // Send to all connected clients
+        broadcast("Broadcast: " + msg);
+    });
+
+    socket.on("close", () => console.log("Client disconnected"));
 });
