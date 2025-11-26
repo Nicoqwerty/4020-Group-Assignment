@@ -15,7 +15,6 @@ app.get('/api/add', (req, res) => {
   const a = Number(req.query.a);
   const b = Number(req.query.b);
 
-
   if (isNaN(a) || isNaN(b)) {
     return res.status(400).json({ error: 'Both a and b must be numbers' });
   }
@@ -24,6 +23,7 @@ app.get('/api/add', (req, res) => {
   res.json({ result });
 });
 
+// GPT test
 app.get("/api/test-gpt", async (req, res) => {
   try {
     const gptResponse = await openai.chat.completions.create({
@@ -41,10 +41,9 @@ app.get("/api/test-gpt", async (req, res) => {
   }
 });
 
+// -------- GPT + DATABASE SETUP -------- //
 
-
-//GPT stuff
- const openai = new OpenAI({
+const openai = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY
 });
 
@@ -62,6 +61,8 @@ async function connectDB() {
   }
 }
 connectDB();
+
+// ------------------- Simple message storage (unchanged) -------------------
 
 app.post('/api/message', async (req, res) => {
   const text = req.body.text;
@@ -83,6 +84,18 @@ app.get('/api/messages', async (req, res) => {
   res.json(data);
 });
 
+// ------------------------- GPT MULTIPLE-CHOICE PROCESSING -------------------------
+
+app.get("/api/clear-gpt", async (req, res) => {
+  try {
+    const result = await db.collection("gpt_answers").deleteMany({});
+    res.json({ success: true, deleted: result.deletedCount });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ success: false, error: err.message });
+  }
+});
+
 app.get("/api/run-gpt-50", async (req, res) => {
   try {
     const questionDocs = await db.collection("sociology_cleaned")
@@ -93,38 +106,62 @@ app.get("/api/run-gpt-50", async (req, res) => {
     const results = [];
 
     for (const doc of questionDocs) {
-      const questionText = doc.question ?? doc[Object.keys(doc).find(k => k !== "_id")];
-      if (!questionText) {
-        console.log("Skipping doc with no question:", doc);
-        continue;
-      }
 
-      console.log("Processing question:", questionText);
+      const questionText = doc.question;
+      const correctAnswer = (doc.correct || "").trim().toUpperCase();
+
+      // Build prompt with choices
+      const prompt =
+        `You are answering a multiple-choice question. 
+Return ONLY the correct letter (A, B, C, or D). Do not explain.
+
+Question: ${doc.question}
+
+A: ${doc.A}
+B: ${doc.B}
+C: ${doc.C}
+D: ${doc.D}
+
+Return ONLY a single letter.`;
 
       const start = Date.now();
 
       const gptResponse = await openai.chat.completions.create({
         model: "gpt-4o-mini",
-        messages: [
-          { role: "user", content: questionText }
-        ]
+        messages: [{ role: "user", content: prompt }]
       });
 
-      console.log("Raw GPT response:", gptResponse);
+      let answer = gptResponse.choices?.[0]?.message?.content?.trim() || "N/A";
+
+      // Sanitize GPT answer
+      answer = answer.replace(/[^A-D]/gi, "").toUpperCase();
+      if (!["A","B","C","D"].includes(answer)) {
+        answer = "N/A";
+      }
 
       const timeTaken = Date.now() - start;
-      const answerText = gptResponse.choices?.[0]?.message?.content ?? "No response";
 
+      const isCorrect = (answer === correctAnswer);
+
+      // Store in DB
       await db.collection("gpt_answers").insertOne({
         question: questionText,
-        gpt_answer: answerText,
+        A: doc.A,
+        B: doc.B,
+        C: doc.C,
+        D: doc.D,
+        correct: correctAnswer,
+        gpt_answer: answer,
+        isCorrect,
         response_time_ms: timeTaken,
         createdAt: new Date()
       });
 
       results.push({
         question: questionText,
-        gpt_answer: answerText,
+        correct: correctAnswer,
+        gpt_answer: answer,
+        isCorrect,
         response_time_ms: timeTaken
       });
     }
@@ -133,19 +170,48 @@ app.get("/api/run-gpt-50", async (req, res) => {
 
   } catch (err) {
     console.error("GPT processing error:", err);
-    res.status(500).json({ 
-      error: "GPT processing failed", 
-      details: err.message,
-      stack: err.stack
-    });
+    res.status(500).json({ error: "GPT processing failed", details: err.message });
   }
 });
+
+// ------------------------- RESULTS SUMMARY -------------------------
+
+app.get("/api/results", async (req, res) => {
+  try {
+    const docs = await db.collection("gpt_answers").find().toArray();
+
+    if (!docs.length) {
+      return res.json({ success: false, msg: "No results yet." });
+    }
+
+    const avgTime =
+      docs.reduce((acc, d) => acc + (d.response_time_ms || 0), 0) / docs.length;
+
+    const accuracy =
+      (docs.filter(d => d.isCorrect).length / docs.length * 100).toFixed(1);
+
+    res.json({
+      success: true,
+      stats: {
+        total: docs.length,
+        avgResponseTimeMs: Math.round(avgTime),
+        accuracy: accuracy + "%"
+      },
+      results: docs
+    });
+
+  } catch (err) {
+    res.status(500).json({ error: "Failed to compute results." });
+  }
+});
+
+// ------------------------- START SERVER -------------------------
 
 app.listen(PORT, () => {
   console.log(`Server running at http://localhost:${PORT}`);
 });
 
-// ----------------------------- WebSocket Server -----------------------------
+// ------------------------- WEBSOCKET SERVER (unchanged) -------------------------
 
 const WebSocket = require("ws");
 const wss = new WebSocket.Server({ port: 3001 });
@@ -167,11 +233,7 @@ wss.on("connection", (socket) => {
 
     socket.on("message", (msg) => {
         console.log("Client says:", msg.toString());
-
-        // Echo back only to sender
         socket.send("Server Received: " + msg);
-
-        // Send to all connected clients
         broadcast("Broadcast: " + msg);
     });
 

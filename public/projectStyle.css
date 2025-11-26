@@ -1455,3 +1455,31 @@ nav a, .name {
 .wsControls button:hover {
     background-color: #9a3a3a;
 }
+
+.resultTable {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+    font-size: 0.9rem;
+    background: #1a1d23;
+    border-radius: 10px;
+    overflow: hidden;
+}
+
+.resultTable th {
+    background: #262b33;
+    padding: 10px;
+    border-bottom: 2px solid #333;
+    color: #d86060;
+    text-align: left;
+}
+
+.resultTable td {
+    padding: 10px;
+    border-bottom: 1px solid #333;
+    color: #ddd;
+}
+
+.resultTable tr:hover {
+    background: #222831;
+}
