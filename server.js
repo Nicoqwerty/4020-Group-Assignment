@@ -11,6 +11,18 @@ const OpenAI = require("openai");
 app.use(express.json());
 app.use(express.static(path.join(__dirname, 'docs')));
 
+// ---------------- ADDITION ROUTE ----------------
+app.get('/api/add', (req, res) => {
+    const a = Number(req.query.a);
+    const b = Number(req.query.b);
+
+    if (isNaN(a) || isNaN(b)) {
+        return res.status(400).json({ error: 'Both a and b must be numbers' });
+    }
+
+    res.json({ result: a + b });
+});
+
 // ---------------- GPT CLIENT ----------------
 const openai = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY
