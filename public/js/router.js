@@ -34,19 +34,38 @@ function loadPage() {
                 }
             }
 
-            // WebSocket page logic
+            // Evaluation page logic (MINIMAL ADDITION)
             if (hash === '/evaluation') {
 
-                // Load websocket.js dynamically
-                const script = document.createElement("script");
-                script.src = "js/websocket.js";
-                script.onload = () => {
-                    console.log("websocket.js loaded");
-                    if (typeof initWebSocket === "function") initWebSocket();
-                    else console.error("initWebSocket still missing");
+                // Load Chart.js first
+                const chartScript = document.createElement("script");
+                chartScript.src = "https://cdn.jsdelivr.net/npm/chart.js";
+                chartScript.onload = () => {
+                    console.log("Chart.js loaded");
+
+                    // Ensure scripts.js functions are reinitialized
+                    if (typeof initEvaluationPage === "function") {
+                        initEvaluationPage();
+                    } else {
+                        console.error("initEvaluationPage() missing");
+                    }
+
+                    // Load websocket.js
+                    const wsScript = document.createElement("script");
+                    wsScript.src = "js/websocket.js";
+                    wsScript.onload = () => {
+                        console.log("websocket.js loaded");
+                        if (typeof initWebSocket === "function") {
+                            initWebSocket();
+                        } else {
+                            console.error("initWebSocket() missing");
+                        }
+                    };
+
+                    document.body.appendChild(wsScript);
                 };
 
-                document.body.appendChild(script);
+                document.body.appendChild(chartScript);
             }
 
         })

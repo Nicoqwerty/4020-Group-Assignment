@@ -1,12 +1,87 @@
 <div class="evaluationContainer">
 
-    <h1 class="evaluationTitle">WebSocket Live Chat Test</h1>
+    <!-- PAGE TITLE -->
+    <h1 class="evaluationTitle">ChatGPT Evaluation Dashboard</h1>
+
+
+
+    <!-- ====================================================== -->
+    <!--                 WEBSOCKET LIVE CHAT                    -->
+    <!-- ====================================================== -->
+
+    <h2 class="sectionTitle">WebSocket Live Chat Test</h2>
 
     <div id="ws-box" class="wsBox"></div>
 
     <div class="wsControls">
         <input id="ws-input" type="text" placeholder="Type a message...">
-        <button onclick="sendWSMessage()">Send</button>
+        <button class="send-btn" onclick="sendWSMessage()">Send</button>
     </div>
 
+    <br><hr><br>
+
+
+
+    <!-- ====================================================== -->
+    <!--                 RUN GPT EVALUATION                     -->
+    <!-- ====================================================== -->
+
+    <h2 class="sectionTitle">Run GPT Evaluation (50 Questions)</h2>
+
+    <button id="runEvalBtn" class="send-btn">Run Evaluation</button>
+
+    <p style="margin-top:10px; opacity:0.7;">
+        This will send all questions in <strong>sociology_cleaned</strong> to GPT
+        and store responses in MongoDB.
+    </p>
+
+    <br><hr><br>
+
+
+
+    <!-- ====================================================== -->
+    <!--                 LOAD / VIEW RESULTS                     -->
+    <!-- ====================================================== -->
+
+    <h2 class="sectionTitle">Evaluation Results</h2>
+
+    <button id="loadResultsBtn" class="send-btn">Load Results</button>
+
+    <div id="resultsOutput"
+         class="wsBox"
+         style="height:auto; padding:20px; margin-top:10px; overflow-x:auto;">
+        <p style="opacity:0.7;">Results will appear here.</p>
+    </div>
+
+    <br><hr><br>
+
+
+
+    <!-- ====================================================== -->
+    <!--               RESPONSE TIME CHART                      -->
+    <!-- ====================================================== -->
+
+    <h2 class="sectionTitle">Response Time Chart</h2>
+
+    <canvas id="responseChart"
+            width="400"
+            height="200"
+            style="background:#1b1e24; border-radius:10px; padding:20px;">
+    </canvas>
+
 </div>
+
+
+<!-- CHART.JS -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<!-- Initialize Evaluation Script (handled by router.js too) -->
+<script>
+document.addEventListener("DOMContentLoaded", () => {
+    if (typeof initEvaluationPage === "function") {
+        initEvaluationPage();
+    } else {
+        console.error("initEvaluationPage missing.");
+    }
+});
+</script>
