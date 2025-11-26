@@ -5,7 +5,7 @@ const routes = {
     '/blog': 'blog.html',
     '/resume': 'resume.html',
     '/contact': 'contact.html',
-    '/evaluation': 'evaluation.html'
+    '/results': 'results.html'
 };
 
 function loadPage() {
@@ -35,7 +35,7 @@ function loadPage() {
             }
 
             // Evaluation page logic (MINIMAL ADDITION)
-            if (hash === '/evaluation') {
+            if (hash === '/results') {
 
                 // Load Chart.js first
                 const chartScript = document.createElement("script");
