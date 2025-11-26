@@ -3,11 +3,7 @@
     <!-- PAGE TITLE -->
     <h1 class="evaluationTitle">ChatGPT Evaluation Dashboard</h1>
 
-
-
-    <!-- ====================================================== -->
     <!--                 WEBSOCKET LIVE CHAT                    -->
-    <!-- ====================================================== -->
 
     <h2 class="sectionTitle">WebSocket Live Chat Test</h2>
 
@@ -20,28 +16,20 @@
 
     <br><hr><br>
 
-
-
-    <!-- ====================================================== -->
     <!--                 RUN GPT EVALUATION                     -->
-    <!-- ====================================================== -->
 
-    <h2 class="sectionTitle">Run GPT Evaluation (50 Questions)</h2>
+    <h2 class="sectionTitle">Run GPT Evaluation (50 Questions Each)</h2>
 
     <button id="runEvalBtn" class="send-btn">Run Evaluation</button>
 
     <p style="margin-top:10px; opacity:0.7;">
-        This will send all questions in <strong>sociology_cleaned</strong> to GPT
+        This will send all questions in <strong>History, Social_Science, Computer_Security</strong> to GPT
         and store responses in MongoDB.
     </p>
 
     <br><hr><br>
 
-
-
-    <!-- ====================================================== -->
     <!--                 LOAD / VIEW RESULTS                     -->
-    <!-- ====================================================== -->
 
     <h2 class="sectionTitle">Evaluation Results</h2>
 
@@ -52,22 +40,6 @@
          style="height:auto; padding:20px; margin-top:10px; overflow-x:auto;">
         <p style="opacity:0.7;">Results will appear here.</p>
     </div>
-
-    <br><hr><br>
-
-
-
-    <!-- ====================================================== -->
-    <!--               RESPONSE TIME CHART                      -->
-    <!-- ====================================================== -->
-
-    <h2 class="sectionTitle">Response Time Chart</h2>
-
-    <canvas id="responseChart"
-            width="400"
-            height="200"
-            style="background:#1b1e24; border-radius:10px; padding:20px;">
-    </canvas>
 
 </div>
 

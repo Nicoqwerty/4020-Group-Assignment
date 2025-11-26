@@ -1,45 +1,14 @@
 console.log("scripts.js loaded");
 
-// ------------------- BLOG POSTS -------------------
-function loadBlogPosts() {
-    const blogList = document.getElementById('blog-list');
-    if (!blogList) return;  // Only run on blog page
-
-    fetch('data/posts.json')
-        .then(response => response.json())
-        .then(posts => {
-            blogList.innerHTML = ""; // Clear previous posts
-
-            posts.forEach(post => {
-                const postElement = document.createElement('div');
-                postElement.className = 'blog-post';
-                postElement.innerHTML = `
-                    <h2 class="post-title">${post.title}</h2>
-                    <div class="post-meta">
-                        <i class="fa-solid fa-calendar"></i>
-                        <span class="space"></span>
-                        <time>${new Date(post.date).toLocaleDateString()}</time>
-                    </div>
-                    <div class="post-content">${post.content}</div>
-                `;
-                blogList.appendChild(postElement);
-            });
-        })
-        .catch(error => console.error('Error loading blog posts:', error));
-}
-
-
-// ------------------- EVALUATION PAGE INIT -------------------
+// ------------------- EVALUATION INIT -------------------
 function initEvaluationPage() {
     console.log("Initializing Evaluation Page…");
 
     setupRunEvaluation();
     setupLoadResults();
-    setupCharts();
 }
 
-
-// ------------------- RUN GPT EVALUATION -------------------
+// ------------------- RUN GPT -------------------
 function setupRunEvaluation() {
     const runBtn = document.getElementById("runEvalBtn");
     if (!runBtn) return;
@@ -52,18 +21,17 @@ function setupRunEvaluation() {
             const res = await fetch("/api/run-gpt-50");
             const data = await res.json();
 
-            alert("Finished processing " + data.count + " questions.");
+            alert(`Finished processing ${data.count} questions.`);
 
             runBtn.disabled = false;
             runBtn.innerText = "Run Evaluation";
 
         } catch (err) {
             console.error(err);
-            alert("Error starting evaluation.");
+            alert("Error running evaluation.");
         }
     });
 }
-
 
 // ------------------- LOAD RESULTS -------------------
 function setupLoadResults() {
@@ -75,24 +43,35 @@ function setupLoadResults() {
             const res = await fetch("/api/results");
             const data = await res.json();
 
+            const out = document.getElementById("resultsOutput");
+            out.innerHTML = "";
+
             if (!data.success) {
-                document.getElementById("resultsOutput").innerHTML =
-                    "<p>No results found.</p>";
+                out.innerHTML = "<p>No results found.</p>";
                 return;
             }
 
-            displaySummary(data.stats);
-            displayDetailedResults(data.results);
+            // Render dataset tables WITHOUT charts
+            if (data.datasets.computer_security_test)
+                renderDataset("Computer Security", data.datasets.computer_security_test);
 
-            // update response time chart
-            if (window.responseChart) {
-                const labels = data.results.map((_, i) => "Q" + (i + 1));
-                const times = data.results.map(r => r.response_time_ms);
+            if (data.datasets.prehistory_test_cleaned)
+                renderDataset("Prehistory", data.datasets.prehistory_test_cleaned);
 
-                window.responseChart.data.labels = labels;
-                window.responseChart.data.datasets[0].data = times;
-                window.responseChart.update();
-            }
+            if (data.datasets.sociology_cleaned)
+                renderDataset("Sociology", data.datasets.sociology_cleaned);
+
+            // Add ONE combined chart container
+            out.innerHTML += `
+                <h2 style="margin-top: 40px; color:#4caf50;">
+                    Combined Response Time Chart
+                </h2>
+                <canvas id="combinedChart" width="600" height="200"
+                    style="background:#1b1e24; border-radius:10px; padding:10px;">
+                </canvas>
+            `;
+
+            renderCombinedChart(data.datasets);
 
         } catch (err) {
             console.error(err);
@@ -101,91 +80,91 @@ function setupLoadResults() {
     });
 }
 
+// ------------------- RENDER TABLE ONLY -------------------
+function renderDataset(title, dataset) {
+    if (!dataset || !dataset.results) return;
 
-// ------------------- DISPLAY SUMMARY -------------------
-function displaySummary(stats) {
+    const id = title.replace(/\s+/g, "");
+
     const out = document.getElementById("resultsOutput");
 
-    out.innerHTML = `
-        <p><strong>Total Answers:</strong> ${stats.total}</p>
-        <p><strong>Average Response Time:</strong> ${stats.avgResponseTimeMs} ms</p>
-        <p><strong>Accuracy:</strong> ${stats.accuracy}</p>
+    out.innerHTML += `
+        <h2 style="margin-top:40px; color:#d86060;">${title}</h2>
 
-        <br><hr><br>
+        <p><strong>Total Answers:</strong> ${dataset.stats.total}</p>
+        <p><strong>Accuracy:</strong> ${dataset.stats.accuracy}</p>
+        <p><strong>Avg Response Time:</strong> ${dataset.stats.avgResponseTimeMs} ms</p>
 
-        <h3>Detailed Results</h3>
+        <br>
+
         <table class="resultTable">
             <thead>
                 <tr>
                     <th>#</th>
                     <th>Question</th>
                     <th>Expected</th>
-                    <th>GPT Answer</th>
+                    <th>GPT</th>
                     <th>Correct?</th>
                     <th>Time (ms)</th>
                 </tr>
             </thead>
-            <tbody id="detailedResultsBody"></tbody>
+            <tbody id="${id}_tbody"></tbody>
         </table>
+
+        <br>
     `;
-}
 
+    const tbody = document.getElementById(`${id}_tbody`);
 
-// ------------------- DETAILED RESULTS TABLE -------------------
-function displayDetailedResults(results) {
-    const tbody = document.getElementById("detailedResultsBody");
-    if (!tbody) return;
-
-    tbody.innerHTML = "";
-
-    results.forEach((r, i) => {
-        const tr = document.createElement("tr");
-
-        tr.innerHTML = `
-            <td>${i + 1}</td>
-            <td>${r.question}</td>
-            <td>${r.correct}</td>
-            <td>${r.gpt_answer}</td>
-            <td style="color:${r.isCorrect ? 'lightgreen' : 'red'};">
-                ${r.isCorrect ? "✔" : "✘"}
-            </td>
-            <td>${r.response_time_ms}</td>
+    dataset.results.forEach((r, i) => {
+        tbody.innerHTML += `
+            <tr>
+                <td>${i + 1}</td>
+                <td>${r.question}</td>
+                <td>${r.correct}</td>
+                <td>${r.gpt_answer}</td>
+                <td style="color:${r.isCorrect ? "lightgreen" : "red"};">
+                    ${r.isCorrect ? "✔" : "✘"}
+                </td>
+                <td>${r.response_time_ms}</td>
+            </tr>
         `;
-
-        tbody.appendChild(tr);
     });
 }
 
+// ------------------- ONE COMBINED CHART -------------------
+function renderCombinedChart(datasets) {
+    const allRT = [];
+    const labels = [];
 
-// ------------------- CHART SETUP -------------------
-function setupCharts() {
-    const chartCanvas = document.getElementById("responseChart");
-    if (!chartCanvas || typeof Chart === "undefined") {
-        console.warn("Chart.js not loaded yet.");
-        return;
+    function pushDataset(name, set) {
+        set.results.forEach((r, i) => {
+            allRT.push(r.response_time_ms);
+            labels.push(`${name} Q${i + 1}`);
+        });
     }
 
-    const ctx = chartCanvas.getContext("2d");
+    pushDataset("CS", datasets.computer_security_test);
+    pushDataset("Pre", datasets.prehistory_test_cleaned);
+    pushDataset("Soc", datasets.sociology_cleaned);
 
-    window.responseChart = new Chart(ctx, {
-        type: 'line',
+    const ctx = document.getElementById("combinedChart");
+
+    new Chart(ctx, {
+        type: "line",
         data: {
-            labels: [],
+            labels: labels,
             datasets: [{
-                label: "Response Time (ms)",
-                data: [],
+                label: "Response Times (ms)",
+                data: allRT,
                 borderColor: "#4caf50",
                 borderWidth: 2,
-                pointRadius: 4,
-                pointBackgroundColor: "#4caf50",
-                tension: 0.25
+                tension: 0.3,
+                pointRadius: 3
             }]
         },
         options: {
-            responsive: true,
-            scales: {
-                y: { beginAtZero: false }
-            }
+            responsive: true
         }
     });
 }
